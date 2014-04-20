@@ -48,9 +48,9 @@ public class QueuePerfTest {
             case 1:
                 return new P1C1QueueOriginal1<Integer>(QUEUE_CAPACITY);
             case 12:
-//                return new P1C1QueueOriginal12<Integer>(QUEUE_CAPACITY);
-//            case 2:
-//                return new P1C1QueueOriginal2<Integer>(QUEUE_CAPACITY);
+                return new P1C1QueueOriginal12<Integer>(QUEUE_CAPACITY);
+            case 2:
+                return new P1C1QueueOriginal2<Integer>(QUEUE_CAPACITY);
 //            case 21:
 //                return new P1C1QueueOriginal21<Integer>(QUEUE_CAPACITY);
 //            case 22:
