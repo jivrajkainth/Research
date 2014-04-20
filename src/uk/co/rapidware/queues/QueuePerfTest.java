@@ -31,9 +31,10 @@ public class QueuePerfTest {
     public static final Integer TEST_VALUE = Integer.valueOf(777);
 
     public static void main(final String[] args) throws Exception {
-        System.out.println("capacity:" + QUEUE_CAPACITY + " reps:"
-                + REPETITIONS);
         final Queue<Integer> queue = createQueue(args[0]);
+
+        System.out.println("capacity:" + QUEUE_CAPACITY + " reps:"
+                + REPETITIONS + " queue:" + queue.getClass().getSimpleName());
 
         for (int i = 0; i < 20; i++) {
             System.gc();
@@ -51,14 +52,14 @@ public class QueuePerfTest {
                 return new P1C1QueueOriginal12<Integer>(QUEUE_CAPACITY);
             case 2:
                 return new P1C1QueueOriginal2<Integer>(QUEUE_CAPACITY);
-//            case 21:
-//                return new P1C1QueueOriginal21<Integer>(QUEUE_CAPACITY);
-//            case 22:
-//                return new P1C1QueueOriginal22<Integer>(QUEUE_CAPACITY);
-//            case 23:
-//                return new P1C1QueueOriginal23<Integer>(QUEUE_CAPACITY);
-//            case 3:
-//                return new P1C1QueueOriginal3<Integer>(QUEUE_CAPACITY);
+            case 21:
+                return new P1C1QueueOriginal21<Integer>(QUEUE_CAPACITY);
+            case 22:
+                return new P1C1QueueOriginal22<Integer>(QUEUE_CAPACITY);
+            case 23:
+                return new P1C1QueueOriginal23<Integer>(QUEUE_CAPACITY);
+            case 3:
+                return new P1C1QueueOriginal3<Integer>(QUEUE_CAPACITY);
 //            case 4:
 //                return new P1C1Queue2CacheLinesHeapBuffer<Integer>(QUEUE_CAPACITY);
 //            case 5:
