@@ -1,4 +1,4 @@
-package main.rapidware.mechsympathy.cachelines;
+package uk.co.rapidware.mechsympathy.cachelines;
 
 import java.util.concurrent.atomic.AtomicLong;
 

@@ -13,41 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package main.rapidware.queues;
+package uk.co.rapidware.queues;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * <ul>
  * <li>Lock free, observing single writer principal.
- * <li>Replacing the long fields with AtomicLong and using lazySet instead of
- * volatile assignment.
- * <li>Using the power of 2 mask, forcing the capacity to next power of 2.
  * </ul>
  */
-public final class P1C1QueueOriginal2<E> implements Queue<E> {
-    private final int mask;
-    private final E[] buffer;
+public final class P1C1QueueOriginal1<T_ElementType> implements Queue<T_ElementType> {
+    private final T_ElementType[] buffer_;
 
-    private final AtomicLong tail = new AtomicLong(0);
-    private final AtomicLong head = new AtomicLong(0);
+    private volatile long tail_ = 0;
+    private volatile long head_ = 0;
 
     @SuppressWarnings("unchecked")
-    public P1C1QueueOriginal2(int capacity) {
-        capacity = findNextPositivePowerOfTwo(capacity);
-        mask = capacity - 1;
-        buffer = (E[]) new Object[capacity];
+    public P1C1QueueOriginal1(final int capacity) {
+        buffer_ = (T_ElementType[]) new Object[capacity];
     }
 
-    public static int findNextPositivePowerOfTwo(final int value) {
-        return 1 << (32 - Integer.numberOfLeadingZeros(value - 1));
-    }
-
-    public boolean add(final E e) {
+    public boolean add(final T_ElementType e) {
         if (offer(e)) {
             return true;
         }
@@ -55,39 +44,39 @@ public final class P1C1QueueOriginal2<E> implements Queue<E> {
         throw new IllegalStateException("Queue is full");
     }
 
-    public boolean offer(final E e) {
+    public boolean offer(final T_ElementType e) {
         if (null == e) {
             throw new NullPointerException("Null is not a valid element");
         }
 
-        final long currentTail = tail.get();
-        final long wrapPoint = currentTail - buffer.length;
-        if (head.get() <= wrapPoint) {
+        final long currentTail = tail_;
+        final long wrapPoint = currentTail - buffer_.length;
+        if (head_ <= wrapPoint) {
             return false;
         }
 
-        buffer[(int) currentTail & mask] = e;
-        tail.lazySet(currentTail + 1);
+        buffer_[(int) (currentTail & (buffer_.length - 1))] = e;
+        tail_ = currentTail + 1;
 
         return true;
     }
 
-    public E poll() {
-        final long currentHead = head.get();
-        if (currentHead >= tail.get()) {
+    public T_ElementType poll() {
+        final long currentHead = head_;
+        if (currentHead >= tail_) {
             return null;
         }
 
-        final int index = (int) currentHead & mask;
-        final E e = buffer[index];
-        buffer[index] = null;
-        head.lazySet(currentHead + 1);
+        final int index = (int) (currentHead % buffer_.length);
+        final T_ElementType e = buffer_[index];
+        buffer_[index] = null;
+        head_ = currentHead + 1;
 
         return e;
     }
 
-    public E remove() {
-        final E e = poll();
+    public T_ElementType remove() {
+        final T_ElementType e = poll();
         if (null == e) {
             throw new NoSuchElementException("Queue is empty");
         }
@@ -95,8 +84,8 @@ public final class P1C1QueueOriginal2<E> implements Queue<E> {
         return e;
     }
 
-    public E element() {
-        final E e = peek();
+    public T_ElementType element() {
+        final T_ElementType e = peek();
         if (null == e) {
             throw new NoSuchElementException("Queue is empty");
         }
@@ -104,16 +93,16 @@ public final class P1C1QueueOriginal2<E> implements Queue<E> {
         return e;
     }
 
-    public E peek() {
-        return buffer[(int) head.get() & mask];
+    public T_ElementType peek() {
+        return buffer_[(int) (head_ % buffer_.length)];
     }
 
     public int size() {
-        return (int) (tail.get() - head.get());
+        return (int) (tail_ - head_);
     }
 
     public boolean isEmpty() {
-        return tail.get() == head.get();
+        return tail_ == head_;
     }
 
     public boolean contains(final Object o) {
@@ -121,8 +110,8 @@ public final class P1C1QueueOriginal2<E> implements Queue<E> {
             return false;
         }
 
-        for (long i = head.get(), limit = tail.get(); i < limit; i++) {
-            final E e = buffer[(int) i & mask];
+        for (long i = head_, limit = tail_; i < limit; i++) {
+            final T_ElementType e = buffer_[(int) (i % buffer_.length)];
             if (o.equals(e)) {
                 return true;
             }
@@ -131,7 +120,7 @@ public final class P1C1QueueOriginal2<E> implements Queue<E> {
         return false;
     }
 
-    public Iterator<E> iterator() {
+    public Iterator<T_ElementType> iterator() {
         throw new UnsupportedOperationException();
     }
 
@@ -157,8 +146,8 @@ public final class P1C1QueueOriginal2<E> implements Queue<E> {
         return true;
     }
 
-    public boolean addAll(final Collection<? extends E> c) {
-        for (final E e : c) {
+    public boolean addAll(final Collection<? extends T_ElementType> c) {
+        for (final T_ElementType e : c) {
             add(e);
         }
 

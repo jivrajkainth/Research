@@ -1,4 +1,4 @@
-package main.rapidware.interviews.coding;
+package uk.co.rapidware.interviews.coding;
 
 import java.util.Arrays;
 import java.util.List;

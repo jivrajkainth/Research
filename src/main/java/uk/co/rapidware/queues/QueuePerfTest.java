@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package main.rapidware.queues;
+package uk.co.rapidware.queues;
 
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;

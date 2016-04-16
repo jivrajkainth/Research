@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package main.rapidware.queues;
+package uk.co.rapidware.queues;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,32 +21,26 @@ import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicLong;
 
-
 /**
  * <ul>
  * <li>Lock free, observing single writer principal.
  * <li>Replacing the long fields with AtomicLong and using lazySet instead of
  * volatile assignment.
  * <li>Using the power of 2 mask, forcing the capacity to next power of 2.
- * <li>Adding head and tail cache fields. Avoiding redundant volatile reads.
  * </ul>
  */
-public final class P1C1QueueOriginal22<E> implements Queue<E> {
-    private final int capacity;
+public final class P1C1QueueOriginal2<E> implements Queue<E> {
     private final int mask;
     private final E[] buffer;
 
     private final AtomicLong tail = new AtomicLong(0);
     private final AtomicLong head = new AtomicLong(0);
 
-    private long tailCache = 0;
-    private long headCache = 0;
-
     @SuppressWarnings("unchecked")
-    public P1C1QueueOriginal22(final int capacity) {
-        this.capacity = findNextPositivePowerOfTwo(capacity);
-        mask = this.capacity - 1;
-        buffer = (E[]) new Object[this.capacity];
+    public P1C1QueueOriginal2(int capacity) {
+        capacity = findNextPositivePowerOfTwo(capacity);
+        mask = capacity - 1;
+        buffer = (E[]) new Object[capacity];
     }
 
     public static int findNextPositivePowerOfTwo(final int value) {
@@ -67,12 +61,9 @@ public final class P1C1QueueOriginal22<E> implements Queue<E> {
         }
 
         final long currentTail = tail.get();
-        final long wrapPoint = currentTail - capacity;
-        if (headCache <= wrapPoint) {
-            headCache = head.get();
-            if (headCache <= wrapPoint) {
-                return false;
-            }
+        final long wrapPoint = currentTail - buffer.length;
+        if (head.get() <= wrapPoint) {
+            return false;
         }
 
         buffer[(int) currentTail & mask] = e;
@@ -83,11 +74,8 @@ public final class P1C1QueueOriginal22<E> implements Queue<E> {
 
     public E poll() {
         final long currentHead = head.get();
-        if (currentHead >= tailCache) {
-            tailCache = tail.get();
-            if (currentHead >= tailCache) {
-                return null;
-            }
+        if (currentHead >= tail.get()) {
+            return null;
         }
 
         final int index = (int) currentHead & mask;
