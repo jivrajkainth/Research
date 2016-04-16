@@ -55,7 +55,7 @@ public final class P1C1QueueOriginal1<T_ElementType> implements Queue<T_ElementT
             return false;
         }
 
-        buffer_[(int) (currentTail & (buffer_.length-1))] = e;
+        buffer_[(int) (currentTail & (buffer_.length - 1))] = e;
         tail_ = currentTail + 1;
 
         return true;

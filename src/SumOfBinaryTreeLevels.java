@@ -6,7 +6,6 @@ public class SumOfBinaryTreeLevels {
     public static void main(String[] args) {
 
 
-
     }
 
 }
