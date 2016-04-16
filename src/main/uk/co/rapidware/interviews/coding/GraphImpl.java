@@ -1,4 +1,4 @@
-package uk.co.rapidware.interviews.coding;
+package main.rapidware.interviews.coding;
 
 import java.io.FileInputStream;
 import java.util.*;

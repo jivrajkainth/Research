@@ -1,4 +1,4 @@
-package uk.co.rapidware.interviews.coding;
+package main.rapidware.interviews.coding;
 
 import java.util.Calendar;
 import java.util.Date;
