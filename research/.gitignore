@@ -79,24 +79,14 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-### Gradle template
-.gradle
-build/
-
-### Ignore Gradle Wrapper generated directories
-caches/
-native/
-wrapper/
-
-# Ignore Gradle GUI config
-gradle-app.setting
-
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
-
-# Created by .ignore support plugin (hsz.mobi)
-
 # Runtime Artefacts those must be excluded
 logs/
-/simple-client/demo-chat-0.1.4/
-/simple-client/log.txt
+
+# Java compiled output
+*.class
+*.jar
+*.war
+*.ear
+
+# JVM crash dumps
+hs_err_pid*
